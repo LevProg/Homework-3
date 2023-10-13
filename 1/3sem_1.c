@@ -82,7 +82,7 @@ void readFile(char* filename) {
                 if (strcmp(existingProduct->name, name) != 0) {
                     printf("Ошибка: Два товара с одинаковым артикулом, но разными названиями\n");
                     fclose(file);
-                    return 1;
+                    _Exit(1);
                 }
             }
             else {
