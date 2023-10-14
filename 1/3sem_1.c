@@ -21,42 +21,29 @@ struct Product* createProduct(const char* name, int code, int price) {
     return product;
 }
 
-void addProduct(struct Product** head, const char* name, int code, int price) {
-    struct Product* newProduct = createProduct(name, code, price);
-    newProduct->next = *head;
-    *head = newProduct;
-}
-
-void sortProducts(struct Product** head) {
-    struct Product* sorted = NULL;
-
-    while (*head != NULL) {
-        struct Product* current = *head;
-        *head = (*head)->next;
-
-        if (sorted == NULL || current->code-sorted->code < 0) {
-            current->next = sorted;
-            sorted = current;
-        }
-        else {
-            struct Product* temp = sorted;
-            while (temp->next != NULL && current->code-temp->next->code >= 0) {
-                temp = temp->next;
-            }
-            current->next = temp->next;
-            temp->next = current;
-        }
+void insertSorted(struct Product** head, struct Product* newProduct) {
+    struct Product* current;
+    if (*head == NULL || (*head)->code >= newProduct->code) {
+        newProduct->next = *head;
+        *head = newProduct;
     }
-
-    *head = sorted;
+    else {
+        current = *head;
+        while (current->next != NULL && current->next->code < newProduct->code) {
+            current = current->next;
+        }
+        newProduct->next = current->next;
+        current->next = newProduct;
+    }
 }
 
-void printTop10(struct Product* head, int n) {
-    for (int i = 0; i < n && head != NULL; i++) {
+void printTop10(struct Product* head) {
+    for (int i = 0; i < 10 && head != NULL; i++) {
         printf("Название: %s, Артикул: %d, Стоимость: %d\n", head->name, head->code, head->price);
         head = head->next;
     }
 }
+
 struct Product* findProduct(struct Product* head, int searchCode) {
     while (head != NULL) {
         if (head->code == searchCode) {
@@ -66,11 +53,12 @@ struct Product* findProduct(struct Product* head, int searchCode) {
     }
     return NULL;
 }
-void readFile(char* filename) {
+
+void readFile(const char* filename) {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         perror("Ошибка при открытии файла");
-        return 1;
+        return;
     }
     while (1) {
         char name[100];
@@ -86,22 +74,22 @@ void readFile(char* filename) {
                 }
             }
             else {
-                addProduct(&productList, name, code, price);
+                struct Product* newProduct = createProduct(name, code, price);
+                insertSorted(&productList, newProduct);
             }
         }
         else {
             break;
         }
     }
-    sortProducts(&productList);
+    fclose(file);
 }
 
 int main() {
-
     setlocale(LC_ALL, "Rus");
     readFile("file_example.txt");
 
-    printTop10(productList, 10);
+    printTop10(productList);
 
     int searchCode;
     printf("Введите код товара для поиска: ");
@@ -119,7 +107,6 @@ int main() {
         struct Product* temp = productList;
         productList = productList->next;
         free(temp);
-
-        return 0;
     }
+    return 0;
 }
