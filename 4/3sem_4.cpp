@@ -16,10 +16,6 @@ class BinaryTree {
 public:
     int x;
     BinaryTree() : root(nullptr) {
-        restart();
-    }
-    void restart() {
-        if (root!= nullptr) root = new Node(nullptr);
         matrix = vector < vector<string >>(10, vector<string>(10, "0"));
         insert("Есть шерсть?");
         insert("медведь");
@@ -34,20 +30,19 @@ public:
     void print() {
         x = 0;
         matrix = vector < vector<string >>(10, vector<string>(10, "0"));
-        FillMartix(root, 0);
-        PrintMatrix();
+        fillMartix(root, 0);
+        printMatrix();
     }
     void chose() {
         Node* cur = root;
         string value;
-        cout << "p-print tree\tr-restart\ts-stop program\ty-yes\tn-no" << endl;
+        cout << "p-print tree\ts-stop program\ty-yes\tn-no" << endl;
         do {
             cout << cur->data<<" (y/n)" << endl;;//question
             cin >> value;
             if (value == "p") print();
             else if (value == "y") cur = cur->left;
             else if ((value == "n")) cur = cur->right;
-            else if ((value == "r")) restart();
             else continue;
             if (cur->left == nullptr) {
                 cout << "Это животное " << cur->data << "? (y/n)" << endl;
@@ -68,17 +63,17 @@ public:
     }
 private:
     Node* root;
-    void FillMartix(Node* t, int y) 
+    void fillMartix(Node* node, int y) 
     {
-        if (t != NULL)
+        if (node != NULL)
         {
-            FillMartix(t->left, y + 1);
-            matrix[y][x] = t->data;
+            fillMartix(node->left, y + 1);
+            matrix[y][x] = node->data;
             x++;
-            FillMartix(t->right, y + 1);
+            fillMartix(node->right, y + 1);
         }
     }
-    void PrintMatrix()
+    void printMatrix()
     {
         for (auto i : matrix) {
             for (int j=0; j < i.size(); j++) {
@@ -90,18 +85,18 @@ private:
             cout << endl<<endl;
         }
     }
-    void replaceRecursive(Node* t, const string& incorectAnswer, const string& corectAnswer, const string& question)
+    void replaceRecursive(Node* node, const string& incorectAnswer, const string& corectAnswer, const string& question)
     {
-        if (t != NULL)
+        if (node != NULL)
         {
-            if (t->data == incorectAnswer) {
-                t->right = new Node(incorectAnswer);
-                t->left = new Node(corectAnswer);
-                t->data = question;
+            if (node->data == incorectAnswer) {
+                node->right = new Node(incorectAnswer);
+                node->left = new Node(corectAnswer);
+                node->data = question;
                 return;
             }
-            replaceRecursive(t->left, incorectAnswer, corectAnswer, question);
-            replaceRecursive(t->right, incorectAnswer, corectAnswer, question);
+            replaceRecursive(node->left, incorectAnswer, corectAnswer, question);
+            replaceRecursive(node->right, incorectAnswer, corectAnswer, question);
         }
     }
 
@@ -109,7 +104,6 @@ private:
         if (node == nullptr) {
             return new Node(value);
         }
-
         if (node->left != nullptr && node->right== nullptr) {
             node->right = insertRecursive(node->right, value);
         }
